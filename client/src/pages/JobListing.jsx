@@ -3,6 +3,11 @@ import { getJobs, saveJob } from "../api/apiJobs.js";
 import { useSession, useUser } from "@clerk/clerk-react";
 import { Input } from "../components/ui/input.jsx";
 import { Button } from "../components/ui/button.jsx";
+import { BarLoader, ClipLoader } from "react-spinners";
+import JobCard from "@/components/JobCard.jsx";
+import useFetch from "@/hooks/useFetch.js";
+import { getCompanies } from "@/api/apiCompanies.js";
+import { State } from "country-state-city";
 import {
   Select,
   SelectContent,
@@ -12,16 +17,21 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BarLoader, ClipLoader } from "react-spinners";
-import JobCard from "@/components/JobCard.jsx";
-import useFetch from "@/hooks/useFetch.js";
-import { getCompanies } from "@/api/apiCompanies.js";
-import { State } from "country-state-city";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const JobListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [location, setLocation] = useState("");
   const [company_id, setCompany_id] = useState("");
+  const [activePage, setActivePage] = useState(1);
 
   const { isLoaded } = useUser();
 
@@ -66,6 +76,12 @@ const JobListing = () => {
     setCompany_id("");
   };
 
+  const totalJobs = jobs?.length;
+  const jobsPerPage = 3;
+  const totalPages = totalJobs ? Math.ceil(totalJobs / jobsPerPage) : 0;
+  const firstJobIndex = (activePage - 1) * jobsPerPage;
+  const lastJobIndex = activePage * jobsPerPage - 1;
+
   if (!isLoaded) {
     return <BarLoader color="#36d7b7" width={"100%"} className="mb-4" />;
   }
@@ -81,7 +97,8 @@ const JobListing = () => {
         {/* search and filter */}
         <form
           onSubmit={handleSearch}
-          className="flex items-center gap-2 w-full h-14 mb-3 "
+          className="flex items-center gap-2 w-full h-14 mb-3"
+          id="SEARCH_AND_FILTER"
         >
           <Input
             type="text"
@@ -152,13 +169,63 @@ const JobListing = () => {
           <ClipLoader color="#36d7b7" className="mb-4" />
         </div>
       )}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {jobs?.map((job) => (
+      <section
+        id="jobs"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+      >
+        {jobs?.slice(firstJobIndex, lastJobIndex + 1).map((job) => (
           <JobCard key={job.id} job={job} savedInit={job?.saved?.length > 0} />
         ))}
       </section>
 
       {/* pagination */}
+      {!jobLoading && totalJobs > 0 && (
+        <Pagination className={"mb-8"}>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                href="#SEARCH_AND_FILTER"
+                onClick={() =>
+                  setActivePage(activePage - 1 > 0 ? activePage - 1 : 1)
+                }
+                className={
+                  activePage === 1 ? "pointer-events-none opacity-50" : ""
+                }
+              />
+            </PaginationItem>
+            {[...Array(totalPages)].map((_, index) => (
+              <PaginationItem>
+                <PaginationLink
+                  key={index + 1}
+                  onClick={() => setActivePage(index + 1)}
+                  isActive={activePage === index + 1}
+                  href="#SEARCH_AND_FILTER"
+                >
+                  {index + 1}
+                </PaginationLink>
+              </PaginationItem>
+            ))}
+            {/* <PaginationItem>
+            <PaginationEllipsis />
+          </PaginationItem> */}
+            <PaginationItem>
+              <PaginationNext
+                href="#SEARCH_AND_FILTER"
+                onClick={() =>
+                  setActivePage(
+                    activePage + 1 <= totalPages ? activePage + 1 : totalPages
+                  )
+                }
+                className={
+                  activePage === totalPages
+                    ? "pointer-events-none opacity-50"
+                    : ""
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 };
