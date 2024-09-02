@@ -96,4 +96,18 @@ const updateHiringStatus = async (token, { job_id }, isOpen) => {
   return data;
 };
 
-export { getJobs, saveJob, getSingleJob, updateHiringStatus };
+// post job
+const addNewJob = async (token, _, jobData) => {
+  const supabase = await supabaseClient(token);
+
+  let query = supabase.from("jobs").insert([jobData]).select();
+  const { data, error } = await query;
+  if (error) {
+    console.log("Error creating job: ", error);
+    throw error;
+  }
+
+  return data;
+};
+
+export { getJobs, saveJob, getSingleJob, updateHiringStatus, addNewJob };
