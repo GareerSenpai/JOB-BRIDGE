@@ -78,7 +78,10 @@ const JobCard = ({
 
         <hr />
 
-        <div>{job.description.substring(0, job.description.indexOf("."))}</div>
+        <div>
+          {job.description.substring(0, 100)}
+          {job.description.length > 100 ? "..." : ""}
+        </div>
       </CardContent>
 
       <CardFooter className="flex gap-2">
