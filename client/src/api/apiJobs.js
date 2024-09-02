@@ -56,4 +56,44 @@ const saveJob = async (token, { alreadySaved }, saveData) => {
   return data;
 };
 
-export { getJobs, saveJob };
+const getSingleJob = async (token, { job_id }) => {
+  const supabase = await supabaseClient(token);
+
+  let query = supabase
+    .from("jobs")
+    .select(
+      "*, company: companies(name, logo_url), applications: applications(*)"
+    )
+    .eq("id", job_id)
+    .single();
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.log("Error while fetching single job: ", error);
+    throw error;
+  }
+
+  return data;
+};
+
+const updateHiringStatus = async (token, { job_id }, isOpen) => {
+  const supabase = await supabaseClient(token);
+
+  let query = supabase
+    .from("jobs")
+    .update({ isOpen })
+    .eq("id", job_id)
+    .select();
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.log("Error while updating hiring status: ", error);
+    throw error;
+  }
+
+  return data;
+};
+
+export { getJobs, saveJob, getSingleJob, updateHiringStatus };

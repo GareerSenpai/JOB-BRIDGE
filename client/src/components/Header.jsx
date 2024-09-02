@@ -34,7 +34,7 @@ const Header = () => {
     <>
       <nav className="py-4 flex gap-10 items-center">
         <Link to="/" className="mr-auto">
-          <img src="public/logo.png" alt="logo" className="h-20" />
+          <img src="/logo.png" alt="logo" className="h-20" />
         </Link>
 
         <SignedOut>
@@ -48,7 +48,7 @@ const Header = () => {
             <Link to="/post-job">
               <Button variant="destructive" className="rounded-full">
                 <PenBox size={20} className="mr-2" />
-                Post Jobs
+                Post a Job
               </Button>
             </Link>
           )}

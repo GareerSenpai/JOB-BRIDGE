@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { getJobs, saveJob } from "../api/apiJobs.js";
-import { useSession, useUser } from "@clerk/clerk-react";
+import { getJobs } from "../api/apiJobs.js";
+import { useUser } from "@clerk/clerk-react";
 import { Input } from "../components/ui/input.jsx";
 import { Button } from "../components/ui/button.jsx";
 import { BarLoader, ClipLoader } from "react-spinners";
