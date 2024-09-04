@@ -17,6 +17,7 @@ import {
 
 import ApplyJobDrawer from "@/components/ApplyJobDrawer";
 import ApplicantCard from "@/components/ApplicantCard";
+import MDEditor from "@uiw/react-md-editor";
 
 const SingleJobPage = () => {
   const { id: job_id } = useParams();
@@ -119,13 +120,25 @@ const SingleJobPage = () => {
           <h3 className="text-3xl font-bold mb-8">
             What are we looking for...
           </h3>
-          <ul className="list-disc">
+          {/* <ul className="list-disc">
             {singleJob.requirements.split("\n").map((requirement, index) => (
               <li key={index} className="text-lg mb-2 ml-6">
                 {requirement}
               </li>
             ))}
-          </ul>
+          </ul> */}
+          <MDEditor.Markdown
+            source={singleJob.requirements}
+            className="bg-transparent sm:text-lg"
+            components={{
+              ul: ({ node, ...props }) => (
+                <ul
+                  {...props}
+                  style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}
+                />
+              ),
+            }}
+          />
         </requirements>
       </content>
       <footer className="mb-8">
