@@ -26,9 +26,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import { Label } from "@/components/ui/label.jsx";
+import { Link } from "react-router-dom";
+import useDebounce from "@/hooks/useDebounce.js";
 
 const JobListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
   const [location, setLocation] = useState("");
   const [company_id, setCompany_id] = useState("");
   const [activePage, setActivePage] = useState(1);
@@ -53,7 +57,7 @@ const JobListing = () => {
 
   useEffect(() => {
     if (isLoaded) jobFn();
-  }, [isLoaded, searchQuery, location, company_id]);
+  }, [isLoaded, debouncedSearchQuery, location, company_id]);
 
   useEffect(() => {
     if (isLoaded) companyFn();
@@ -77,7 +81,7 @@ const JobListing = () => {
   };
 
   const totalJobs = jobs?.length;
-  const jobsPerPage = 3;
+  const jobsPerPage = 6;
   const totalPages = totalJobs ? Math.ceil(totalJobs / jobsPerPage) : 0;
   const firstJobIndex = (activePage - 1) * jobsPerPage;
   const lastJobIndex = activePage * jobsPerPage - 1;
@@ -95,7 +99,7 @@ const JobListing = () => {
 
       <section className="mb-8">
         {/* search and filter */}
-        <form
+        <div
           onSubmit={handleSearch}
           className="flex items-center gap-2 w-full h-14 mb-3"
           id="SEARCH_AND_FILTER"
@@ -105,11 +109,12 @@ const JobListing = () => {
             placeholder="Search Jobs By Title..."
             name="search-query"
             className="flex-1 h-full text-1xl px-4"
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-          <Button type="submit" variant="blue" className="h-full sm:w-28">
+          {/* <Button type="submit" variant="blue" className="h-full sm:w-28">
             Search
-          </Button>
-        </form>
+          </Button> */}
+        </div>
         <div className="flex flex-col sm:flex-row items-center gap-2">
           <Select
             value={location}
@@ -169,6 +174,9 @@ const JobListing = () => {
           <ClipLoader color="#36d7b7" className="mb-4" />
         </div>
       )}
+
+      {!jobLoading && totalJobs === 0 && <div>No results found</div>}
+
       <section
         id="jobs"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
@@ -185,36 +193,68 @@ const JobListing = () => {
             <PaginationItem>
               <PaginationPrevious
                 href="#SEARCH_AND_FILTER"
-                onClick={() =>
-                  setActivePage(activePage - 1 > 0 ? activePage - 1 : 1)
-                }
+                onClick={() => setActivePage(Math.max(activePage - 1, 1))}
                 className={
                   activePage === 1 ? "pointer-events-none opacity-50" : ""
                 }
               />
             </PaginationItem>
-            {[...Array(totalPages)].map((_, index) => (
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => setActivePage(1)}
+                isActive={activePage === 1}
+                href="#SEARCH_AND_FILTER"
+              >
+                1
+              </PaginationLink>
+            </PaginationItem>
+
+            {activePage > 3 && (
               <PaginationItem>
-                <PaginationLink
-                  key={index + 1}
-                  onClick={() => setActivePage(index + 1)}
-                  isActive={activePage === index + 1}
-                  href="#SEARCH_AND_FILTER"
-                >
-                  {index + 1}
-                </PaginationLink>
+                <PaginationEllipsis />
               </PaginationItem>
-            ))}
-            {/* <PaginationItem>
-            <PaginationEllipsis />
-          </PaginationItem> */}
+            )}
+
+            {[...Array(3)].map((_, index) => {
+              const page = activePage + (index - 1);
+              return (
+                page > 1 &&
+                page < totalPages && (
+                  <PaginationItem>
+                    <PaginationLink
+                      key={page}
+                      onClick={() => setActivePage(page)}
+                      isActive={activePage === page}
+                      href="#SEARCH_AND_FILTER"
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              );
+            })}
+
+            {activePage < totalPages - 2 && (
+              <PaginationItem>
+                <PaginationEllipsis />
+              </PaginationItem>
+            )}
+
+            <PaginationItem>
+              <PaginationLink
+                onClick={() => setActivePage(totalPages)}
+                isActive={activePage === totalPages}
+                href="#SEARCH_AND_FILTER"
+              >
+                {totalPages}
+              </PaginationLink>
+            </PaginationItem>
+
             <PaginationItem>
               <PaginationNext
                 href="#SEARCH_AND_FILTER"
                 onClick={() =>
-                  setActivePage(
-                    activePage + 1 <= totalPages ? activePage + 1 : totalPages
-                  )
+                  setActivePage(Math.min(activePage + 1, totalPages))
                 }
                 className={
                   activePage === totalPages
@@ -225,6 +265,34 @@ const JobListing = () => {
             </PaginationItem>
           </PaginationContent>
         </Pagination>
+      )}
+      {!jobLoading && totalJobs > 0 && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const page = parseInt(formData.get("jump-to-page"));
+
+            if (!isNaN(page)) {
+              setActivePage(Math.min(Math.max(page, 1), totalPages));
+              document
+                .getElementById("SEARCH_AND_FILTER")
+                .scrollIntoView({ behavior: "smooth" });
+            }
+          }}
+          className="flex justify-center items-center gap-4 mb-8"
+        >
+          <Label className="text-base">Go to Page: </Label>
+          <Input
+            type="number"
+            name="jump-to-page"
+            className="w-14 appearance-none"
+            autoComplete="off"
+          />
+          <Button type="submit" variant="secondary">
+            Go
+          </Button>
+        </form>
       )}
     </div>
   );

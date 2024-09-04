@@ -46,7 +46,10 @@ const Header = () => {
         <SignedIn>
           {user?.unsafeMetadata?.role === "recruiter" && (
             <Link to="/post-job">
-              <Button variant="destructive" className="rounded-full">
+              <Button
+                variant="destructive"
+                className="rounded-full hidden sm:inline-flex"
+              >
                 <PenBox size={20} className="mr-2" />
                 Post a Job
               </Button>
@@ -59,13 +62,28 @@ const Header = () => {
               },
             }}
           >
+            {user?.unsafeMetadata?.role === "recruiter" && (
+              <UserButton.MenuItems>
+                <UserButton.Link
+                  label="Post Job"
+                  labelIcon={<PenBox size={15} />}
+                  href="/post-job"
+                />
+              </UserButton.MenuItems>
+            )}
+
             <UserButton.MenuItems>
               <UserButton.Link
-                label="Post Jobs"
+                label={
+                  user?.unsafeMetadata?.role === "recruiter"
+                    ? "My Jobs"
+                    : "My Applications"
+                }
                 labelIcon={<BriefcaseBusiness size={15} />}
-                href="/post-job"
+                href="/my-jobs"
               />
             </UserButton.MenuItems>
+
             <UserButton.MenuItems>
               <UserButton.Link
                 label="Saved Jobs"

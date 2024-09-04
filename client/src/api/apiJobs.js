@@ -110,4 +110,62 @@ const addNewJob = async (token, _, jobData) => {
   return data;
 };
 
-export { getJobs, saveJob, getSingleJob, updateHiringStatus, addNewJob };
+const getSavedJobs = async (token) => {
+  const supabase = await supabaseClient(token);
+
+  let query = supabase
+    .from("saved_jobs")
+    .select("*, job:jobs(*, company:companies(name, logo_url))");
+
+  const { data, error } = await query;
+  if (error) {
+    console.log("Error fetching saved jobs: ", error);
+    throw error;
+  }
+
+  return data;
+};
+
+const getMyJobs = async (token, { recruiter_id }, _) => {
+  const supabase = await supabaseClient(token);
+
+  const { data, error } = await supabase
+    .from("jobs")
+    .select("*, company:companies(name, logo_url), saved:saved_jobs(id)")
+    .eq("recruiter_id", recruiter_id);
+
+  if (error) {
+    console.log("Error fetching my jobs: ", error);
+    throw error;
+  }
+
+  return data;
+};
+
+const deleteJob = async (token, { job_id }, _) => {
+  const supabase = await supabaseClient(token);
+
+  const { data, error } = await supabase
+    .from("jobs")
+    .delete()
+    .eq("id", job_id)
+    .select();
+
+  if (error) {
+    console.log("Error while deleting job: ", error);
+    throw error;
+  }
+
+  return data;
+};
+
+export {
+  getJobs,
+  saveJob,
+  getSingleJob,
+  updateHiringStatus,
+  addNewJob,
+  getSavedJobs,
+  getMyJobs,
+  deleteJob,
+};

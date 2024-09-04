@@ -14,7 +14,7 @@ const applyForJob = async (token, _, applicantData) => {
     .upload(filename, applicantData.resume);
 
   if (storageError) {
-    console.log("Error while uploading resume: ", error);
+    console.log("Error while uploading resume: ", storageError);
     throw error;
   }
 
@@ -51,4 +51,20 @@ const updateApplicationStatus = async (token, { job_id }, status) => {
   return data;
 };
 
-export { applyForJob, updateApplicationStatus };
+const getApplications = async (token, { user_id }, _) => {
+  const supabase = await supabaseClient(token);
+
+  const { data, error } = await supabase
+    .from("applications")
+    .select("*, job:jobs(title, company:companies(name))")
+    .eq("candidate_id", user_id);
+
+  if (error) {
+    console.log("Error fetching applications: ", error);
+    throw error;
+  }
+
+  return data;
+};
+
+export { applyForJob, updateApplicationStatus, getApplications };

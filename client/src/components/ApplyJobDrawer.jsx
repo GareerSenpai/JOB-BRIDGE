@@ -19,6 +19,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import useFetch from "@/hooks/useFetch";
 import { applyForJob } from "@/api/apiApplications";
+import FileInput from "./ui/file-input";
 
 const ApplyJobDrawer = ({ job, hasApplied = false, user, fetchJob }) => {
   const schema = z.object({
@@ -32,13 +33,17 @@ const ApplyJobDrawer = ({ job, hasApplied = false, user, fetchJob }) => {
     }),
     resume: z
       .any()
+      .refine((file) => file, {
+        message: "Resume is required",
+      })
       .refine(
         (file) =>
-          file[0] &&
-          (file[0].type === "application/pdf" ||
-            file[0].type === "application/msword"),
+          file &&
+          file.type &&
+          (file.type === "application/pdf" ||
+            file.type === "application/msword"),
         {
-          message: "Resume can only be of type PDF or Word document",
+          message: "Resume can only be of type PDF or DOC",
         }
       ),
   });
@@ -101,6 +106,8 @@ const ApplyJobDrawer = ({ job, hasApplied = false, user, fetchJob }) => {
               {...register("experience", {
                 valueAsNumber: true,
               })}
+              type="number"
+              autoComplete="off"
               placeholder="Years of Experience"
             />
             {errors.experience && (
@@ -142,14 +149,19 @@ const ApplyJobDrawer = ({ job, hasApplied = false, user, fetchJob }) => {
               <p className="text-red-500">{errors.education.message}</p>
             )}
 
-            <Input
-              {...register("resume")}
-              type="file"
-              accept=".pdf, .doc, .docx"
+            <Controller
               name="resume"
-              id="RESUME"
-              placeholder="Choose File"
-              className="file:text-gray-500"
+              control={control}
+              render={({ field }) => (
+                <FileInput
+                  accept=".pdf, .doc, .docx"
+                  placeholder="Upload Resume"
+                  onChange={(file) => {
+                    field.onChange(file);
+                  }}
+                  value={field.value}
+                />
+              )}
             />
             {errors.resume && (
               <p className="text-red-500">{errors.resume.message}</p>
@@ -172,7 +184,7 @@ const ApplyJobDrawer = ({ job, hasApplied = false, user, fetchJob }) => {
           </form>
           <DrawerFooter>
             <DrawerClose asChild>
-              <Button variant="outline" size="lg">
+              <Button variant="destructive" size="lg">
                 Cancel
               </Button>
             </DrawerClose>
