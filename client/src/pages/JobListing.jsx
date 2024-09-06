@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { getJobs } from "../api/apiJobs.js";
 import { useUser } from "@clerk/clerk-react";
 import { Input } from "../components/ui/input.jsx";
 import { Button } from "../components/ui/button.jsx";
 import { BarLoader, ClipLoader } from "react-spinners";
-import JobCard from "@/components/JobCard.jsx";
+
 import useFetch from "@/hooks/useFetch.js";
 import { getCompanies } from "@/api/apiCompanies.js";
-import { State } from "country-state-city";
+// import { State } from "country-state-city";
+import States from "../data/locations.json";
 import {
   Select,
   SelectContent,
@@ -29,6 +30,9 @@ import {
 import { Label } from "@/components/ui/label.jsx";
 import { Link } from "react-router-dom";
 import useDebounce from "@/hooks/useDebounce.js";
+import { Skeleton } from "@/components/ui/skeleton.jsx";
+
+const JobCard = lazy(() => import("../components/JobCard.jsx"));
 
 const JobListing = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -36,6 +40,8 @@ const JobListing = () => {
   const [location, setLocation] = useState("");
   const [company_id, setCompany_id] = useState("");
   const [activePage, setActivePage] = useState(1);
+
+  const searchAndFilterRef = useRef(null);
 
   const { isLoaded } = useUser();
 
@@ -90,7 +96,7 @@ const JobListing = () => {
     return <BarLoader color="#36d7b7" width={"100%"} className="mb-4" />;
   }
 
-  console.log(jobs);
+  // console.log(jobs);
   return (
     <div>
       <h2 className="text-center text-6xl sm:text-7xl font-extrabold gradient gradient-title mb-8">
@@ -103,6 +109,7 @@ const JobListing = () => {
           onSubmit={handleSearch}
           className="flex items-center gap-2 w-full h-14 mb-3"
           id="SEARCH_AND_FILTER"
+          ref={searchAndFilterRef}
         >
           <Input
             type="text"
@@ -125,7 +132,7 @@ const JobListing = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                {State.getStatesOfCountry("IN").map((state) => (
+                {States.map((state) => (
                   <SelectItem
                     key={state.isoCode}
                     value={state.name}
@@ -168,21 +175,27 @@ const JobListing = () => {
         </div>
       </section>
 
-      {/* display jobs */}
-      {jobLoading && (
-        <div className="flex justify-center items-center">
-          <ClipLoader color="#36d7b7" className="mb-4" />
-        </div>
-      )}
-
       {!jobLoading && totalJobs === 0 && <div>No results found</div>}
 
       <section
         id="jobs"
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
       >
+        {jobLoading && (
+          <>
+            {[...Array(6)].map((_, index) => (
+              <Skeleton key={index} className="w-full h-[250px]" />
+            ))}
+          </>
+        )}
         {jobs?.slice(firstJobIndex, lastJobIndex + 1).map((job) => (
-          <JobCard key={job.id} job={job} savedInit={job?.saved?.length > 0} />
+          <Suspense fallback={<Skeleton className="w-full h-[250px]" />}>
+            <JobCard
+              key={job.id}
+              job={job}
+              savedInit={job?.saved?.length > 0}
+            />
+          </Suspense>
         ))}
       </section>
 
@@ -275,9 +288,9 @@ const JobListing = () => {
 
             if (!isNaN(page)) {
               setActivePage(Math.min(Math.max(page, 1), totalPages));
-              document
-                .getElementById("SEARCH_AND_FILTER")
-                .scrollIntoView({ behavior: "smooth" });
+              searchAndFilterRef.current?.scrollIntoView({
+                behavior: "smooth",
+              });
             }
           }}
           className="flex justify-center items-center gap-4 mb-8"
