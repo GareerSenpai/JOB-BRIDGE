@@ -94,13 +94,6 @@ const AddCompanyDrawer = ({ fetchCompanies }) => {
             )}
           </div>
           <div className="w-full">
-            {/* <Input
-              type="file"
-              accept="image/*"
-              placeholder="Choose Logo"
-              className="file:text-gray-500"
-              {...register("logo")}
-            /> */}
             <Controller
               control={control}
               name="logo"

@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { State } from "country-state-city";
+import States from "../data/locations.json";
 import {
   Select,
   SelectContent,
@@ -11,24 +11,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import React, { useEffect } from "react";
+import React, { lazy, Suspense, useEffect } from "react";
 import useFetch from "@/hooks/useFetch";
 import { getCompanies } from "@/api/apiCompanies";
-import { BarLoader } from "react-spinners";
+import { BarLoader, ClipLoader } from "react-spinners";
 import { useUser } from "@clerk/clerk-react";
-import AddCompanyDrawer from "@/components/AddCompanyDrawer.jsx";
+// import AddCompanyDrawer from "@/components/AddCompanyDrawer.jsx";
 import { Controller, useForm } from "react-hook-form";
-import MDEditor from "@uiw/react-md-editor";
+// import MDEditor from "@uiw/react-md-editor";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { addNewJob } from "@/api/apiJobs";
 import { useNavigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const MDEditor = lazy(() => import("@uiw/react-md-editor"));
+const AddCompanyDrawer = lazy(() =>
+  import("@/components/AddCompanyDrawer.jsx")
+);
 
 const PostJob = () => {
   const { isLoaded, user } = useUser();
-
   const navigate = useNavigate();
-
   const schema = z.object({
     title: z.string().min(1, { message: "Title is required" }),
     description: z.string().min(1, { message: "Description is required" }),
@@ -36,7 +40,6 @@ const PostJob = () => {
     company_id: z.string().min(1, { message: "Select or add a new Company" }),
     requirements: z.string().min(1, { message: "Requirements are required" }),
   });
-
   const {
     register,
     handleSubmit,
@@ -47,49 +50,40 @@ const PostJob = () => {
     defaultValues: { location: "", company_id: "", requirements: "" },
     resolver: zodResolver(schema),
   });
-
   const {
     fn: companyFn,
     data: companies,
     loading: companyLoading,
   } = useFetch(getCompanies);
-
   const {
     fn: addNewJobFn,
     data: addNewJobData,
     error: addNewJobError,
     loading: addNewJobLoading,
   } = useFetch(addNewJob);
-
   useEffect(() => {
     if (isLoaded) companyFn();
   }, [isLoaded]);
-
   useEffect(() => {
     if (addNewJobData?.length > 0) {
       navigate("/jobs");
     }
   }, [addNewJobLoading]);
-
   const onSubmit = (data) => {
     addNewJobFn({ ...data, recruiter_id: user.id, isOpen: true });
     reset();
   };
-
   if (!isLoaded) {
     return <BarLoader color="#36d7b7" width={"100%"} />;
   }
-
   if (user?.unsafeMetadata?.role === "candidate") {
     return <div>Only Recruiters can post jobs</div>;
   }
-
   // When the below code is run, it will show BarLoader twice because of the useEffect used above to fetch companies
   // TODO: fix this
   // if (!isLoaded || companyLoading) {
   //   return <BarLoader color="#36d7b7" width={"100%"} />;
   // }
-
   return (
     <div>
       <h1 className="text-3xl sm:text-5xl md:text-7xl gradient gradient-title text-center font-extrabold pt-2 pb-10">
@@ -106,7 +100,6 @@ const PostJob = () => {
           {...register("title")}
         />
         {errors.title && <p className="text-red-500">{errors.title.message}</p>}
-
         <Textarea
           placeholder="Job Description"
           className="px-4"
@@ -115,7 +108,6 @@ const PostJob = () => {
         {errors.description && (
           <p className="text-red-500">{errors.description.message}</p>
         )}
-
         <div className="flex flex-col sm:flex-row items-center gap-4">
           <Controller
             name="location"
@@ -127,7 +119,7 @@ const PostJob = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {State.getStatesOfCountry("IN").map((state) => (
+                    {States.map((state) => (
                       <SelectItem
                         key={state.isoCode}
                         value={state.name}
@@ -171,7 +163,6 @@ const PostJob = () => {
               </Select>
             )}
           />
-
           <AddCompanyDrawer fetchCompanies={companyFn} />
         </div>
         {errors.location && (
@@ -184,23 +175,28 @@ const PostJob = () => {
           name="requirements"
           control={control}
           render={({ field }) => (
-            <MDEditor
-              value={field.value}
-              onChange={field.onChange}
-              previewOptions={{
-                components: {
-                  // Override the style for ul elements
-                  ul: ({ node, ...props }) => (
-                    <ul
-                      {...props}
-                      style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}
-                    />
-                  ),
-                },
-              }}
-            />
+            <Suspense fallback={<Skeleton className="w-full h-48" />}>
+              <MDEditor
+                value={field.value}
+                onChange={field.onChange}
+                previewOptions={{
+                  components: {
+                    // Override the style for ul elements
+                    ul: ({ node, ...props }) => (
+                      <ul
+                        {...props}
+                        style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}
+                      />
+                    ),
+                  },
+                }}
+              />
+            </Suspense>
           )}
         />
+        {errors.requirements && (
+          <p className="text-red-500">{errors.requirements.message}</p>
+        )}
         {addNewJobLoading && <BarLoader color="#36d7b7" width={"100%"} />}
         {addNewJobError?.message && (
           <p className="text-red-500">{addNewJobError.message}</p>

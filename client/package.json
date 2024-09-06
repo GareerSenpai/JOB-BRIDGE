@@ -23,7 +23,6 @@
     "@uiw/react-md-editor": "^4.0.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "country-state-city": "^3.2.1",
     "embla-carousel-react": "^8.2.0",
     "lucide-react": "^0.436.0",
     "react": "^18.3.1",
