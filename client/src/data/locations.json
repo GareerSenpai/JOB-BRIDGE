@@ -1,0 +1,146 @@
+[
+  {
+    "name": "Andhra Pradesh",
+    "isoCode": "IN-AP"
+  },
+  {
+    "name": "Arunachal Pradesh",
+    "isoCode": "IN-AR"
+  },
+  {
+    "name": "Assam",
+    "isoCode": "IN-AS"
+  },
+  {
+    "name": "Bihar",
+    "isoCode": "IN-BR"
+  },
+  {
+    "name": "Chhattisgarh",
+    "isoCode": "IN-CT"
+  },
+  {
+    "name": "Goa",
+    "isoCode": "IN-GA"
+  },
+  {
+    "name": "Gujarat",
+    "isoCode": "IN-GJ"
+  },
+  {
+    "name": "Haryana",
+    "isoCode": "IN-HR"
+  },
+  {
+    "name": "Himachal Pradesh",
+    "isoCode": "IN-HP"
+  },
+  {
+    "name": "Jharkhand",
+    "isoCode": "IN-JH"
+  },
+  {
+    "name": "Karnataka",
+    "isoCode": "IN-KA"
+  },
+  {
+    "name": "Kerala",
+    "isoCode": "IN-KL"
+  },
+  {
+    "name": "Madhya Pradesh",
+    "isoCode": "IN-MP"
+  },
+  {
+    "name": "Maharashtra",
+    "isoCode": "IN-MH"
+  },
+  {
+    "name": "Manipur",
+    "isoCode": "IN-MN"
+  },
+  {
+    "name": "Meghalaya",
+    "isoCode": "IN-ML"
+  },
+  {
+    "name": "Mizoram",
+    "isoCode": "IN-MZ"
+  },
+  {
+    "name": "Nagaland",
+    "isoCode": "IN-NL"
+  },
+  {
+    "name": "Odisha",
+    "isoCode": "IN-OR"
+  },
+  {
+    "name": "Punjab",
+    "isoCode": "IN-PB"
+  },
+  {
+    "name": "Rajasthan",
+    "isoCode": "IN-RJ"
+  },
+  {
+    "name": "Sikkim",
+    "isoCode": "IN-SK"
+  },
+  {
+    "name": "Tamil Nadu",
+    "isoCode": "IN-TN"
+  },
+  {
+    "name": "Telangana",
+    "isoCode": "IN-TG"
+  },
+  {
+    "name": "Tripura",
+    "isoCode": "IN-TR"
+  },
+  {
+    "name": "Uttar Pradesh",
+    "isoCode": "IN-UP"
+  },
+  {
+    "name": "Uttarakhand",
+    "isoCode": "IN-UT"
+  },
+  {
+    "name": "West Bengal",
+    "isoCode": "IN-WB"
+  },
+  {
+    "name": "Andaman and Nicobar Islands",
+    "isoCode": "IN-AN"
+  },
+  {
+    "name": "Chandigarh",
+    "isoCode": "IN-CH"
+  },
+  {
+    "name": "Dadra and Nagar Haveli and Daman and Diu",
+    "isoCode": "IN-DN"
+  },
+  {
+    "name": "Delhi",
+    "isoCode": "IN-DL"
+  },
+  {
+    "name": "Jammu and Kashmir",
+    "isoCode": "IN-JK"
+  },
+  {
+    "name": "Ladakh",
+    "isoCode": "IN-LA"
+  },
+  {
+    "name": "Lakshadweep",
+    "isoCode": "IN-LD"
+  },
+  {
+    "name": "Puducherry",
+    "isoCode": "IN-PY"
+  }
+]
