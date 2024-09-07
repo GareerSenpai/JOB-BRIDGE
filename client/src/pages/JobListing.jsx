@@ -99,7 +99,7 @@ const JobListing = () => {
   // console.log(jobs);
   return (
     <div>
-      <h2 className="text-center text-6xl sm:text-7xl font-extrabold gradient gradient-title mb-8">
+      <h2 className="text-center text-6xl sm:text-7xl font-extrabold gradient gradient-title mb-8 mt-4">
         Latest Jobs
       </h2>
 
@@ -183,7 +183,7 @@ const JobListing = () => {
       >
         {jobLoading && (
           <>
-            {[...Array(6)].map((_, index) => (
+            {[...Array(jobsPerPage)].map((_, index) => (
               <Skeleton key={index} className="w-full h-[250px]" />
             ))}
           </>
@@ -253,15 +253,17 @@ const JobListing = () => {
               </PaginationItem>
             )}
 
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => setActivePage(totalPages)}
-                isActive={activePage === totalPages}
-                href="#SEARCH_AND_FILTER"
-              >
-                {totalPages}
-              </PaginationLink>
-            </PaginationItem>
+            {totalPages > 1 && (
+              <PaginationItem>
+                <PaginationLink
+                  onClick={() => setActivePage(totalPages)}
+                  isActive={activePage === totalPages}
+                  href="#SEARCH_AND_FILTER"
+                >
+                  {totalPages}
+                </PaginationLink>
+              </PaginationItem>
+            )}
 
             <PaginationItem>
               <PaginationNext

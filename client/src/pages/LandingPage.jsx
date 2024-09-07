@@ -18,7 +18,7 @@ import {
 
 const LandingPage = () => {
   return (
-    <main className="flex flex-col gap-10 sm:gap-20 py-10 sm:py-20">
+    <main className="flex flex-col gap-10 md:gap-20 py-10 sm:py-20">
       <section className="text-center">
         <h1 className="flex flex-col leading-tight justify-center items-center gradient gradient-title text-4xl font-extrabold sm:text-6xl lg:text-8xl tracking-tighter py-4">
           Find your dream job{" "}
@@ -32,19 +32,23 @@ const LandingPage = () => {
           </span>
         </h1>
 
-        <p className="text-gray-300 sm:mt-4 text-xs sm:text-xl">
+        <p className="text-gray-300 sm:mt-4 text sm:text-xl mt-4">
           Explore thousands of job listings or find a perfect candidate
         </p>
       </section>
 
-      <div className="flex justify-center gap-6">
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-6">
         <Link to="/jobs">
-          <Button variant="blue" size="xl">
+          <Button variant="blue" size="xl" className="w-[15rem] sm:w-auto">
             Find Jobs
           </Button>
         </Link>
         <Link to="/post-job">
-          <Button variant="destructive" size="xl">
+          <Button
+            variant="destructive"
+            size="xl"
+            className="w-[15rem] sm:w-auto"
+          >
             Post Job
           </Button>
         </Link>

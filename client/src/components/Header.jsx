@@ -97,7 +97,7 @@ const Header = () => {
         {showSignIn && (
           <div
             onClick={(e) => handleOverlayClick(e)}
-            className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50"
+            className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50"
           >
             <SignIn
               signUpForceRedirectUrl="/onboarding"

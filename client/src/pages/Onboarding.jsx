@@ -40,7 +40,7 @@ const Onboarding = () => {
       <h2 className="gradient-title gradient font-extrabold text-7xl sm:text-8xl tracking-tighter">
         I'm a...
       </h2>
-      <div className="mt-16 grid grid-cols-2 gap-4 w-full md:px-40">
+      <div className="mt-16 grid sm:grid-cols-2 gap-4 w-full mb-8">
         <Button
           variant="blue"
           className="h-36 text-2xl"
