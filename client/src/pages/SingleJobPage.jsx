@@ -116,26 +116,18 @@ const SingleJobPage = () => {
           <h3 className="text-3xl font-bold mb-8">About the job</h3>
           <p className="text-lg">{singleJob.description}</p>
         </description>
-        <requirements>
+        <section>
           <h3 className="text-3xl font-bold mb-8">
             What are we looking for...
           </h3>
           <MDEditor.Markdown
             source={singleJob.requirements}
-            className="bg-transparent sm:text-lg"
-            components={{
-              ul: ({ node, ...props }) => (
-                <ul
-                  {...props}
-                  style={{ listStyleType: "disc", paddingLeft: "1.5rem" }}
-                />
-              ),
-            }}
+            className="singleJobPageRequirements sm:text-lg"
           />
-        </requirements>
+        </section>
       </content>
       <footer className="mb-8">
-        {user.id !== singleJob.recruiter_id && (
+        {user.unsafeMetadata?.role !== "recruiter" && (
           <ApplyJobDrawer
             job={singleJob}
             user={user}
