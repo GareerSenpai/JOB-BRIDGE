@@ -32,20 +32,18 @@ const CreatedJobs = () => {
           <ClipLoader color="#36d7b7" width={"100%"} className="mb-4" />
         </div>
       )}
-      {createdJobs?.map((job) => (
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
-          key={job.id}
-        >
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        {createdJobs?.map((job) => (
           <JobCard
+            key={job.id}
             job={job}
             isMyJob={true}
             savedInit={job.saved[0]?.length > 0}
             onJobAction={fnCreatedJobs}
           />
-        </div>
-      ))}
-      {createdJobs && createdJobs.length === 0 && <p>No Jobs Found</p>}
+        ))}
+      </div>
+      {createdJobs && createdJobs.length === 0 && <p>No jobs posted yet</p>}
     </>
   );
 };
