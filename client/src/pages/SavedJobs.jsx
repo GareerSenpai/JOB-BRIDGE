@@ -1,18 +1,10 @@
 import { getSavedJobs } from "@/api/apiJobs";
 import JobCard from "@/components/JobCard";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "@/components/ui/select";
 import ViewBy from "@/components/ViewBy";
 import useFetch from "@/hooks/useFetch";
 import { useUser } from "@clerk/clerk-react";
 import React, { useEffect, useMemo, useState } from "react";
-import { BarLoader, ClipLoader } from "react-spinners";
+import { ClipLoader } from "react-spinners";
 
 const SavedJobs = () => {
   const [sortBy, setSortBy] = useState("newest"); // job title(ascending), job title(defending), newest, oldest
@@ -59,7 +51,7 @@ const SavedJobs = () => {
 
   return (
     <div>
-      <h2 className="text-center text-6xl sm:text-7xl font-extrabold gradient gradient-title mb-8">
+      <h2 className="text-center text-4xl xs:text-6xl sm:text-7xl font-extrabold gradient gradient-title mb-8">
         Saved Jobs
       </h2>
 

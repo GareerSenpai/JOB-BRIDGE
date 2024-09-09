@@ -3,34 +3,23 @@ import { getJobs } from "../api/apiJobs.js";
 import { useUser } from "@clerk/clerk-react";
 import { Input } from "../components/ui/input.jsx";
 import { Button } from "../components/ui/button.jsx";
-import { BarLoader, ClipLoader } from "react-spinners";
+import { BarLoader } from "react-spinners";
 
 import useFetch from "@/hooks/useFetch.js";
 import { getCompanies } from "@/api/apiCompanies.js";
-// import { State } from "country-state-city";
 import States from "../data/locations.json";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
 import { Label } from "@/components/ui/label.jsx";
-import { Link } from "react-router-dom";
 import useDebounce from "@/hooks/useDebounce.js";
 import { Skeleton } from "@/components/ui/skeleton.jsx";
+import PaginationComponent from "@/components/PaginationComponent.jsx";
 
 const JobCard = lazy(() => import("../components/JobCard.jsx"));
 
@@ -99,7 +88,7 @@ const JobListing = () => {
   // console.log(jobs);
   return (
     <div>
-      <h2 className="text-center text-6xl sm:text-7xl font-extrabold gradient gradient-title mb-8 mt-4">
+      <h2 className="text-center text-5xl xs:text-6xl sm:text-7xl font-extrabold gradient gradient-title mb-8 mt-4">
         Latest Jobs
       </h2>
 
@@ -189,7 +178,10 @@ const JobListing = () => {
           </>
         )}
         {jobs?.slice(firstJobIndex, lastJobIndex + 1).map((job) => (
-          <Suspense fallback={<Skeleton className="w-full h-[250px]" />}>
+          <Suspense
+            key={job.id}
+            fallback={<Skeleton className="w-full h-[250px]" />}
+          >
             <JobCard
               key={job.id}
               job={job}
@@ -201,85 +193,11 @@ const JobListing = () => {
 
       {/* pagination */}
       {!jobLoading && totalJobs > 0 && (
-        <Pagination className={"mb-8"}>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#SEARCH_AND_FILTER"
-                onClick={() => setActivePage(Math.max(activePage - 1, 1))}
-                className={
-                  activePage === 1 ? "pointer-events-none opacity-50" : ""
-                }
-              />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink
-                onClick={() => setActivePage(1)}
-                isActive={activePage === 1}
-                href="#SEARCH_AND_FILTER"
-              >
-                1
-              </PaginationLink>
-            </PaginationItem>
-
-            {activePage > 3 && (
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-            )}
-
-            {[...Array(3)].map((_, index) => {
-              const page = activePage + (index - 1);
-              return (
-                page > 1 &&
-                page < totalPages && (
-                  <PaginationItem>
-                    <PaginationLink
-                      key={page}
-                      onClick={() => setActivePage(page)}
-                      isActive={activePage === page}
-                      href="#SEARCH_AND_FILTER"
-                    >
-                      {page}
-                    </PaginationLink>
-                  </PaginationItem>
-                )
-              );
-            })}
-
-            {activePage < totalPages - 2 && (
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-            )}
-
-            {totalPages > 1 && (
-              <PaginationItem>
-                <PaginationLink
-                  onClick={() => setActivePage(totalPages)}
-                  isActive={activePage === totalPages}
-                  href="#SEARCH_AND_FILTER"
-                >
-                  {totalPages}
-                </PaginationLink>
-              </PaginationItem>
-            )}
-
-            <PaginationItem>
-              <PaginationNext
-                href="#SEARCH_AND_FILTER"
-                onClick={() =>
-                  setActivePage(Math.min(activePage + 1, totalPages))
-                }
-                className={
-                  activePage === totalPages
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        <PaginationComponent
+          activePage={activePage}
+          totalPages={totalPages}
+          href="#SEARCH_AND_FILTER"
+        />
       )}
       {!jobLoading && totalJobs > 0 && (
         <form
