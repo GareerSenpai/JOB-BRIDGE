@@ -1,11 +1,21 @@
 import { getSavedJobs } from "@/api/apiJobs";
 import JobCard from "@/components/JobCard";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from "@/components/ui/select";
+import ViewBy from "@/components/ViewBy";
 import useFetch from "@/hooks/useFetch";
 import { useUser } from "@clerk/clerk-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { BarLoader, ClipLoader } from "react-spinners";
 
 const SavedJobs = () => {
+  const [sortBy, setSortBy] = useState("newest"); // job title(ascending), job title(defending), newest, oldest
   const { isLoaded } = useUser();
 
   const {
@@ -21,38 +31,72 @@ const SavedJobs = () => {
     }
   }, [isLoaded]);
 
-  // if ((isLoaded && loadingSavedJobs) || (!isLoaded && !loadingSavedJobs)) {
-  //   return <BarLoader color="#36d7b7" width={"100%"} className="mb-4" />;
-  // }
+  const sortedJobs = useMemo(() => {
+    if (!dataSavedJobs) return [];
 
-  // if (isLoaded && dataSavedJobs?.length === 0) {
-  //   return <p>No saved jobs</p>;
-  // }
+    let jobs = [...dataSavedJobs];
+
+    switch (sortBy) {
+      case "newest":
+        return jobs;
+      case "oldest":
+        return jobs.reverse();
+      case "job-title-ascending":
+        return jobs.sort((a, b) => a.job.title.localeCompare(b.job.title));
+      case "job-title-descending":
+        return jobs.sort((a, b) => b.job.title.localeCompare(a.job.title));
+      default:
+        return jobs;
+    }
+  }, [sortBy, dataSavedJobs]);
+
+  const sortOptions = [
+    { label: "Newest", value: "newest" },
+    { label: "Oldest", value: "oldest" },
+    { label: "Job Title (Ascending)", value: "job-title-ascending" },
+    { label: "Job Title (Descending)", value: "job-title-descending" },
+  ];
 
   return (
     <div>
       <h2 className="text-center text-6xl sm:text-7xl font-extrabold gradient gradient-title mb-8">
         Saved Jobs
       </h2>
+
       {loadingSavedJobs && (
         <div className="flex justify-center items-center">
           <ClipLoader color="#36d7b7" className="mb-4" />
         </div>
       )}
-      <div
-        id="SAVED_JOBS"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
-      >
-        {dataSavedJobs?.map((savedJob) => (
-          <JobCard
-            key={savedJob.id}
-            job={savedJob.job}
-            savedInit={true}
-            onJobAction={fnSavedJobs}
+
+      {errorSavedJobs && (
+        <p className="text-center text-red-500">{errorSavedJobs}</p>
+      )}
+
+      {dataSavedJobs?.length > 0 ? (
+        <>
+          <ViewBy
+            options={sortOptions}
+            onChange={(value) => setSortBy(value)}
+            placeholder="Sort By"
           />
-        ))}
-        {dataSavedJobs?.length === 0 && <p>No saved jobs 👀</p>}
-      </div>
+          <div
+            id="SAVED_JOBS"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+          >
+            {sortedJobs.map((savedJob) => (
+              <JobCard
+                key={savedJob.id}
+                job={savedJob.job}
+                savedInit={true}
+                onJobAction={fnSavedJobs}
+              />
+            ))}
+          </div>
+        </>
+      ) : (
+        dataSavedJobs?.length === 0 && <p>No saved jobs 👀</p>
+      )}
     </div>
   );
 };

@@ -2,7 +2,7 @@ import { getSingleJob, updateHiringStatus } from "@/api/apiJobs";
 import useFetch from "@/hooks/useFetch";
 import { useUser } from "@clerk/clerk-react";
 import { Briefcase, DoorClosed, DoorOpen, MapPinIcon } from "lucide-react";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { BarLoader } from "react-spinners";
 
@@ -18,8 +18,11 @@ import {
 import ApplyJobDrawer from "@/components/ApplyJobDrawer";
 import ApplicantCard from "@/components/ApplicantCard";
 import MDEditor from "@uiw/react-md-editor";
+import ViewBy from "@/components/ViewBy";
 
 const SingleJobPage = () => {
+  const [sortBy, setSortBy] = useState("newest");
+  const [filterByStatus, setFilterByStatus] = useState("all");
   const { id: job_id } = useParams();
 
   const { isLoaded, user } = useUser();
@@ -40,12 +43,63 @@ const SingleJobPage = () => {
     if (isLoaded) getSingleJobFn();
   }, [job_id, isLoaded]);
 
-  if (isLoaded) console.log(singleJob);
+  // if (isLoaded) console.log(singleJob);
 
   const handleHiringStatusUpdate = async () => {
     await updateHiringStatusFn(!singleJob?.isOpen);
     if (isLoaded) getSingleJobFn();
   };
+
+  const sortOptions = [
+    { label: "Newest", value: "newest" },
+    { label: "Oldest", value: "oldest" },
+  ];
+
+  const statusOptions = [
+    { label: "All", value: "all" },
+    { label: "Applied", value: "applied" },
+    { label: "Interviewing", value: "interviewing" },
+    { label: "Hired", value: "hired" },
+    { label: "Rejected", value: "rejected" },
+  ];
+
+  const sortedApplicants = useMemo(() => {
+    if (!singleJob?.applications) return [];
+
+    let applications = [...singleJob?.applications];
+
+    switch (filterByStatus) {
+      case "applied":
+        applications = applications.filter((app) => app.status === "applied");
+        break;
+      case "interviewing":
+        applications = applications.filter(
+          (app) => app.status === "interviewing"
+        );
+        break;
+      case "hired":
+        applications = applications.filter((app) => app.status === "hired");
+        break;
+      case "rejected":
+        applications = applications.filter((app) => app.status === "rejected");
+        break;
+      default:
+        applications = applications;
+    }
+
+    switch (sortBy) {
+      case "newest":
+        return applications.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+      case "oldest":
+        return applications.sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        );
+      default:
+        return applications;
+    }
+  }, [singleJob?.applications, sortBy, filterByStatus]);
 
   if (!isLoaded || singleJobLoading) {
     return <BarLoader color="#36d7b7" width={"100%"} className="mb-4" />;
@@ -141,7 +195,19 @@ const SingleJobPage = () => {
           user.id === singleJob.recruiter_id && (
             <div className="flex flex-col gap-2">
               <h2 className="font-bold mb-4 text-xl ml-1">Applicants</h2>
-              {singleJob.applications.map((application) => (
+              <div className="flex flex-col sm:flex-row sm:gap-4">
+                <ViewBy
+                  options={sortOptions}
+                  onChange={(value) => setSortBy(value)}
+                  placeholder="Sort By"
+                />
+                <ViewBy
+                  options={statusOptions}
+                  onChange={(status) => setFilterByStatus(status)}
+                  placeholder="Filter By Status"
+                />
+              </div>
+              {sortedApplicants.map((application) => (
                 <ApplicantCard key={application.id} application={application} />
               ))}
             </div>
