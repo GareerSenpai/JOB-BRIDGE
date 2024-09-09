@@ -2,10 +2,10 @@
 module.exports = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{js,jsx}',
-    './components/**/*.{js,jsx}',
-    './app/**/*.{js,jsx}',
-    './src/**/*.{js,jsx}',
+    "./pages/**/*.{js,jsx}",
+    "./components/**/*.{js,jsx}",
+    "./app/**/*.{js,jsx}",
+    "./src/**/*.{js,jsx}",
   ],
   prefix: "",
   theme: {
@@ -71,7 +71,13 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      // Add custom breakpoints here
+      screens: {
+        xs: "420px", // Custom extra small breakpoint
+        "3xl": "1920px", // Custom large breakpoint for wider screens
+        "4xl": "2560px", // Custom extra large breakpoint for ultra-wide monitors
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};
