@@ -45,6 +45,14 @@ const ApplicantCard = ({ application, isCandidate = false }) => {
     // link.download = "resume.pdf";
     link.click();
   };
+
+  const statusColor = {
+    applied: "text-yellow-500",
+    interviewing: "text-blue-500",
+    hired: "text-green-500",
+    rejected: "text-red-500",
+  };
+
   return (
     <>
       <Card>
@@ -56,11 +64,13 @@ const ApplicantCard = ({ application, isCandidate = false }) => {
             {isCandidate
               ? `${application?.job?.title} at ${application?.job?.company?.name}`
               : application.name}
-            <Download
-              className="text-black bg-white rounded-full h-8 w-8 p-1.5 cursor-pointer"
-              size={18}
-              onClick={handleDownloadClick}
-            />
+            {!isCandidate && (
+              <Download
+                className="text-black bg-white rounded-full h-8 w-8 p-1.5 cursor-pointer"
+                size={18}
+                onClick={handleDownloadClick}
+              />
+            )}
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 flex-1">
@@ -69,7 +79,7 @@ const ApplicantCard = ({ application, isCandidate = false }) => {
               <BriefcaseBusiness size={15} /> {application?.experience} years of
               experience
             </div>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-2 items-center capitalize">
               <School size={15} />
               {application?.education}
             </div>
@@ -83,7 +93,10 @@ const ApplicantCard = ({ application, isCandidate = false }) => {
           <span>{new Date(application?.created_at).toLocaleString()}</span>
           {isCandidate ? (
             <span className="capitalize font-semibold">
-              Status: {application?.status}
+              Status:{" "}
+              <span className={`${statusColor[application?.status]}`}>
+                {application?.status}
+              </span>
             </span>
           ) : (
             <Select
