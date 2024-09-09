@@ -1,9 +1,9 @@
-import { deleteJob, getMyJobs } from "@/api/apiJobs";
+import { getMyJobs } from "@/api/apiJobs";
 import useFetch from "@/hooks/useFetch";
 import { useUser } from "@clerk/clerk-react";
 import React, { useEffect, useMemo, useState } from "react";
 import JobCard from "./JobCard";
-import { BarLoader, ClipLoader } from "react-spinners";
+import { BarLoader } from "react-spinners";
 import ViewBy from "./ViewBy";
 
 const CreatedJobs = () => {
@@ -57,7 +57,7 @@ const CreatedJobs = () => {
     <>
       {loadingCreatedJobs && (
         <div className="flex justify-center">
-          <ClipLoader color="#36d7b7" width={"100%"} className="mb-4" />
+          <BarLoader color="#36d7b7" width={"100%"} className="mb-4" />
         </div>
       )}
       {!loadingCreatedJobs && createdJobs?.length > 0 && (

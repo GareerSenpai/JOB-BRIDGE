@@ -9,10 +9,7 @@ import {
 import {
   Boxes,
   BriefcaseBusiness,
-  CloudDownloadIcon,
   Download,
-  DownloadCloud,
-  DownloadIcon,
   School,
 } from "lucide-react";
 import useFetch from "@/hooks/useFetch";

@@ -26,7 +26,7 @@ const CreatedApplications = () => {
   return (
     <div>
       {applications?.map((application) => (
-        <div className="mb-4">
+        <div className="mb-4" key={application.id}>
           <ApplicantCard
             application={application}
             key={application.id}
