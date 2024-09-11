@@ -1,30 +1,57 @@
 import supabaseClient from "@/utils/supabase.js";
 
-const getJobs = async (token, { location, company_id, searchQuery }) => {
+const getJobs = async (
+  token,
+  { location, company_id, searchQuery, limit, page }
+) => {
   const supabase = await supabaseClient(token);
   let query = supabase
     .from("jobs")
     .select("*, company:companies(name, logo_url), saved:saved_jobs(id)");
 
+  let queryTotalCount = supabase.from("jobs").select("*", {
+    count: "exact",
+    head: true,
+  });
+
   if (location) {
     query = query.eq("location", location);
+    queryTotalCount = queryTotalCount.eq("location", location);
   }
 
   if (company_id) {
     query = query.eq("company_id", company_id);
+    queryTotalCount = queryTotalCount.eq("company_id", company_id);
   }
 
   if (searchQuery) {
     query = query.ilike("title", `%${searchQuery}%`);
+    queryTotalCount = queryTotalCount.ilike("title", `%${searchQuery}%`);
   }
 
-  const { data, error } = await query;
-  if (error) {
-    console.log("Error: ", error);
+  const { count: totalCount, error: countError } = await queryTotalCount;
+  if (countError) {
+    console.log("Error while counting jobs: ", countError);
+    throw countError;
+  }
+
+  if (page && limit) {
+    const start = (page - 1) * limit;
+    const end = page * limit - 1;
+    query = query.range(start, end);
+  }
+
+  const { data: jobs, error: jobError } = await query;
+  if (jobError) {
+    console.log("Error while fetching jobs: ", error);
     throw error;
   }
 
-  return data;
+  // console.log("page: ", page);
+  // console.log("totalCount: ", totalCount);
+  // console.log("jobs: ", jobs);
+
+  return { jobs, totalCount };
 };
 
 const saveJob = async (token, { alreadySaved }, saveData) => {

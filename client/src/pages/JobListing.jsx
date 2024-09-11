@@ -20,15 +20,24 @@ import { Label } from "@/components/ui/label.jsx";
 import useDebounce from "@/hooks/useDebounce.js";
 import { Skeleton } from "@/components/ui/skeleton.jsx";
 import PaginationComponent from "@/components/PaginationComponent.jsx";
+import { useSearchParams } from "react-router-dom";
 
 const JobCard = lazy(() => import("../components/JobCard.jsx"));
 
 const JobListing = () => {
+  const [searchParams, setSearchParams] = useSearchParams({
+    page: 1,
+    q: "",
+    location: "",
+    company_id: "",
+  });
+
+  const location = searchParams.get("location");
+  const company_id = searchParams.get("company_id");
+  const query = searchParams.get("q");
+  const activePage = Math.floor(Number(searchParams.get("page"))) || 1;
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
-  const [location, setLocation] = useState("");
-  const [company_id, setCompany_id] = useState("");
-  const [activePage, setActivePage] = useState(1);
 
   const searchAndFilterRef = useRef(null);
 
@@ -36,12 +45,14 @@ const JobListing = () => {
 
   const {
     fn: jobFn,
-    data: jobs,
+    data: jobsData,
     loading: jobLoading,
   } = useFetch(getJobs, {
     location,
     company_id,
     searchQuery,
+    page: activePage,
+    limit: 1,
   });
 
   const {
@@ -52,11 +63,24 @@ const JobListing = () => {
 
   useEffect(() => {
     if (isLoaded) jobFn();
-  }, [isLoaded, debouncedSearchQuery, location, company_id]);
+  }, [isLoaded, location, company_id, query, activePage]);
 
   useEffect(() => {
     if (isLoaded) companyFn();
   }, [isLoaded]);
+
+  useEffect(() => {
+    setSearchParams(
+      (prev) => {
+        prev.set("page", 1);
+        prev.set("q", debouncedSearchQuery);
+        return prev;
+      },
+      {
+        replace: true,
+      }
+    );
+  }, [debouncedSearchQuery]);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -69,14 +93,47 @@ const JobListing = () => {
     }
   };
 
-  const handleClearFilter = () => {
-    setSearchQuery("");
-    setLocation("");
-    setCompany_id("");
+  const handleLocationChange = (value) => {
+    setSearchParams(
+      (prev) => {
+        prev.set("location", value);
+        prev.set("page", 1);
+        return prev;
+      },
+      {
+        replace: true,
+      }
+    );
   };
 
-  const totalJobs = jobs?.length;
-  const jobsPerPage = 6;
+  const handleCompanyChange = (value) => {
+    setSearchParams(
+      (prev) => {
+        prev.set("company_id", value);
+        prev.set("page", 1);
+        return prev;
+      },
+      {
+        replace: true,
+      }
+    );
+  };
+
+  const handleClearFilter = () => {
+    setSearchQuery("");
+    setSearchParams({ page: 1, q: "", location: "", company_id: "" });
+  };
+
+  const handlePageChange = (page) => {
+    setSearchParams((prev) => {
+      prev.set("page", page);
+      return prev;
+    });
+  };
+
+  const jobs = jobsData?.jobs;
+  const totalJobs = jobsData?.totalCount;
+  const jobsPerPage = 1;
   const totalPages = totalJobs ? Math.ceil(totalJobs / jobsPerPage) : 0;
   const firstJobIndex = (activePage - 1) * jobsPerPage;
   const lastJobIndex = activePage * jobsPerPage - 1;
@@ -105,6 +162,7 @@ const JobListing = () => {
             placeholder="Search Jobs By Title..."
             name="search-query"
             className="flex-1 h-full text-1xl px-4"
+            value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
           {/* <Button type="submit" variant="blue" className="h-full sm:w-28">
@@ -114,7 +172,7 @@ const JobListing = () => {
         <div className="flex flex-col sm:flex-row items-center gap-2">
           <Select
             value={location}
-            onValueChange={(value) => setLocation(value)}
+            onValueChange={(value) => handleLocationChange(value)}
           >
             <SelectTrigger className="px-4 select-none">
               <SelectValue placeholder="Filter By Location" />
@@ -133,10 +191,7 @@ const JobListing = () => {
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select
-            value={company_id}
-            onValueChange={(value) => setCompany_id(value)}
-          >
+          <Select onValueChange={(value) => handleCompanyChange(value)}>
             <SelectTrigger className="px-4 select-none">
               <SelectValue placeholder="Filter By Company" />
             </SelectTrigger>
@@ -177,18 +232,19 @@ const JobListing = () => {
             ))}
           </>
         )}
-        {jobs?.slice(firstJobIndex, lastJobIndex + 1).map((job) => (
-          <Suspense
-            key={job.id}
-            fallback={<Skeleton className="w-full h-[250px]" />}
-          >
-            <JobCard
+        {!jobLoading &&
+          jobs?.map((job) => (
+            <Suspense
               key={job.id}
-              job={job}
-              savedInit={job?.saved?.length > 0}
-            />
-          </Suspense>
-        ))}
+              fallback={<Skeleton className="w-full h-[250px]" />}
+            >
+              <JobCard
+                key={job.id}
+                job={job}
+                savedInit={job?.saved?.length > 0}
+              />
+            </Suspense>
+          ))}
       </section>
 
       {/* pagination */}
@@ -197,7 +253,7 @@ const JobListing = () => {
           activePage={activePage}
           totalPages={totalPages}
           href="#SEARCH_AND_FILTER"
-          onPageChange={setActivePage}
+          onPageChange={handlePageChange}
         />
       )}
       {!jobLoading && totalJobs > 0 && (
@@ -208,7 +264,7 @@ const JobListing = () => {
             const page = parseInt(formData.get("jump-to-page"));
 
             if (!isNaN(page)) {
-              setActivePage(Math.min(Math.max(page, 1), totalPages));
+              handlePageChange(Math.min(Math.max(page, 1), totalPages));
               searchAndFilterRef.current?.scrollIntoView({
                 behavior: "smooth",
               });
