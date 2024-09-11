@@ -47,9 +47,8 @@ const PaginationComponent = ({
           return (
             page > 1 &&
             page < totalPages && (
-              <PaginationItem>
+              <PaginationItem key={page}>
                 <PaginationLink
-                  key={page}
                   onClick={() => onPageChange(page)}
                   isActive={activePage === page}
                   href={href}
