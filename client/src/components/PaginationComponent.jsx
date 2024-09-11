@@ -13,21 +13,21 @@ const PaginationComponent = ({
   activePage,
   totalPages,
   href = "#",
-  setActivePage,
+  onPageChange,
 }) => {
   return (
     <Pagination className={"mb-8"}>
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            href="#SEARCH_AND_FILTER"
-            onClick={() => setActivePage(Math.max(activePage - 1, 1))}
+            href={href}
+            onClick={() => onPageChange(Math.max(activePage - 1, 1))}
             className={activePage === 1 ? "pointer-events-none opacity-50" : ""}
           />
         </PaginationItem>
         <PaginationItem>
           <PaginationLink
-            onClick={() => setActivePage(1)}
+            onClick={() => onPageChange(1)}
             isActive={activePage === 1}
             href={href}
           >
@@ -43,13 +43,14 @@ const PaginationComponent = ({
 
         {[...Array(3)].map((_, index) => {
           const page = activePage + (index - 1);
+
           return (
             page > 1 &&
             page < totalPages && (
               <PaginationItem>
                 <PaginationLink
                   key={page}
-                  onClick={() => setActivePage(page)}
+                  onClick={() => onPageChange(page)}
                   isActive={activePage === page}
                   href={href}
                 >
@@ -69,7 +70,7 @@ const PaginationComponent = ({
         {totalPages > 1 && (
           <PaginationItem>
             <PaginationLink
-              onClick={() => setActivePage(totalPages)}
+              onClick={() => onPageChange(totalPages)}
               isActive={activePage === totalPages}
               href={href}
             >
@@ -81,7 +82,7 @@ const PaginationComponent = ({
         <PaginationItem>
           <PaginationNext
             href={href}
-            onClick={() => setActivePage(Math.min(activePage + 1, totalPages))}
+            onClick={() => onPageChange(Math.min(activePage + 1, totalPages))}
             className={
               activePage === totalPages ? "pointer-events-none opacity-50" : ""
             }

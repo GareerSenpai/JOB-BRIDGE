@@ -197,6 +197,7 @@ const JobListing = () => {
           activePage={activePage}
           totalPages={totalPages}
           href="#SEARCH_AND_FILTER"
+          onPageChange={setActivePage}
         />
       )}
       {!jobLoading && totalJobs > 0 && (
