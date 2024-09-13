@@ -52,7 +52,7 @@ const JobListing = () => {
     company_id,
     searchQuery,
     page: activePage,
-    limit: 1,
+    limit: 6,
   });
 
   const {
@@ -133,7 +133,7 @@ const JobListing = () => {
 
   const jobs = jobsData?.jobs;
   const totalJobs = jobsData?.totalCount;
-  const jobsPerPage = 1;
+  const jobsPerPage = 6;
   const totalPages = totalJobs ? Math.ceil(totalJobs / jobsPerPage) : 0;
   const firstJobIndex = (activePage - 1) * jobsPerPage;
   const lastJobIndex = activePage * jobsPerPage - 1;

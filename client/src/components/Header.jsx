@@ -33,7 +33,7 @@ const Header = () => {
     <>
       <nav className="py-4 flex gap-10 items-center">
         <Link to="/" className="mr-auto">
-          <img src="/logo.png" alt="logo" className="h-20" />
+          <img src="/logo.png" alt="logo" className="h-24" />
         </Link>
 
         <SignedOut>

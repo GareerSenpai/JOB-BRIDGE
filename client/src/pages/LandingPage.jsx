@@ -20,13 +20,13 @@ const LandingPage = () => {
   return (
     <main className="flex flex-col gap-10 md:gap-20 py-10 sm:py-20">
       <section className="text-center">
-        <h1 className="flex flex-col leading-tight justify-center items-center gradient gradient-title text-4xl font-extrabold sm:text-6xl lg:text-8xl tracking-tighter py-4">
-          Find your dream job{" "}
-          <span className="flex gap-2 sm:gap-6">
-            and get{" "}
+        <h1 className="flex flex-col leading-tight justify-center items-center gradient gradient-title text-4xl font-extrabold sm:text-6xl lg:text-7xl tracking-tight py-4">
+          Talent meets Opportunities{" "}
+          <span className="flex gap-2 sm:gap-6 justify-center items-center md:mt-4">
+            at{" "}
             <img
               src="/logo.png"
-              alt="Hirrd Logo"
+              alt="Job Bridge logo"
               className="h-14 sm:h-24 lg:h-32"
             />
           </span>
@@ -83,7 +83,7 @@ const LandingPage = () => {
       </div>
 
       {/* {banner} */}
-      <img src="/banner_comp.jpeg" alt="banner" className="w-full" />
+      <img src="/banner.png" alt="banner" className="w-full" />
 
       <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* {cards} */}

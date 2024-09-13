@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense } from "react";
 import "./App.css";
 import { createBrowserRouter } from "react-router-dom";
 import { RouterProvider } from "react-router-dom";
@@ -15,7 +15,6 @@ const PostJob = lazy(() => import("./pages/PostJob"));
 const SavedJobs = lazy(() => import("./pages/SavedJobs"));
 const MyJobs = lazy(() => import("./pages/MyJobs"));
 
-<Suspense fallback={<BarLoader color="#36d7b7" widt h={"100%"} />}></Suspense>;
 const router = createBrowserRouter([
   {
     element: <AppLayout />,
@@ -25,10 +24,10 @@ const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: "/jobs",
+        path: "/jobs?",
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<h1>Loading...</h1>}>
+            <Suspense fallback={<BarLoader color="#36d7b7" width={"100%"} />}>
               <JobListing />
             </Suspense>
           </ProtectedRoute>
@@ -38,7 +37,7 @@ const router = createBrowserRouter([
         path: "/job/:id",
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<h1>Loading...</h1>}>
+            <Suspense fallback={<BarLoader color="#36d7b7" width={"100%"} />}>
               <SingleJobPage />
             </Suspense>
           </ProtectedRoute>
@@ -48,7 +47,7 @@ const router = createBrowserRouter([
         path: "/onboarding",
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<h1>Loading...</h1>}>
+            <Suspense fallback={<BarLoader color="#36d7b7" width={"100%"} />}>
               <Onboarding />
             </Suspense>
           </ProtectedRoute>
@@ -58,7 +57,7 @@ const router = createBrowserRouter([
         path: "/post-job",
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<h1>Loading...</h1>}>
+            <Suspense fallback={<BarLoader color="#36d7b7" width={"100%"} />}>
               <PostJob />
             </Suspense>
           </ProtectedRoute>
@@ -68,7 +67,7 @@ const router = createBrowserRouter([
         path: "/saved-jobs",
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<h1>Loading...</h1>}>
+            <Suspense fallback={<BarLoader color="#36d7b7" width={"100%"} />}>
               <SavedJobs />
             </Suspense>
           </ProtectedRoute>
@@ -78,7 +77,7 @@ const router = createBrowserRouter([
         path: "/my-jobs",
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<h1>Loading...</h1>}>
+            <Suspense fallback={<BarLoader color="#36d7b7" width={"100%"} />}>
               <MyJobs />
             </Suspense>
           </ProtectedRoute>
